@@ -10,7 +10,7 @@
 
 // defining some basics for the sliding menu
 #define exposeWidth 150.0
-#define menuCellIDs @"MenuCell"
+#define menuCellID @"MenuCell"
 
 @interface RootViewController ()
 
@@ -59,6 +59,101 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    [self.menu registerClass:[UITableViewCell class] forCellReuseIdentifier:menuCellID];
+    self.menu.frame = self.view.bounds;
+    [self.view addSubview:self.menu];
+    
+    self.indexOfVisibleController = 0;
+    UIViewController *visibleViewController = self.viewControllers[0];
+    visibleViewController.view.frame = [self offScreenFrame];
+    [self addChildViewController:visibleViewController];
+    [self.view addSubview:visibleViewController.view];
+    self.isMenuVisible = YES;
+    [self adjustContentFrameAccordingToMenuVisibilty];
+    
+    [self.viewControllers[0] didMoveToParentViewController:self];
+}
+
+- (void)toggleMenuVisibility:(id)sender
+{
+    self.isMenuVisible = !self.isMenuVisible;
+    [self adjustContentFrameAccordingToMenuVisibilty];
+}
+
+- (void)adjustContentFrameAccordingToMenuVisibilty
+{
+    UIViewController *visibleViewController = self.viewControllers[self.indexOfVisibleController];
+    CGSize size = visibleViewController.view.frame.size;
+    
+    if (self.isMenuVisible)
+    {
+        [UIView animateWithDuration:0.5 animations:^{
+            visibleViewController.view.frame = CGRectMake(exposeWidth, 0, size.width, size.height);
+        }];
+    }
+    else
+        [UIView animateWithDuration:0.5 animations:^{
+            visibleViewController.view.frame = CGRectMake(0, 0, size.width, size.height);
+        }];
+}
+
+- (void)replaceVisibleViewControllerWithViewControllerAtIndex:(NSInteger)index
+{
+    if (index == self.indexOfVisibleController) return;
+    UIViewController *incomingViewController = self.viewControllers[index];
+    incomingViewController.view.frame = [self offScreenFrame];
+    UIViewController *outgoingViewController = self.viewControllers[self.indexOfVisibleController];
+    CGRect visibleFrame = self.view.bounds;
+    
+    
+    [outgoingViewController willMoveToParentViewController:nil];
+    
+    [self addChildViewController:incomingViewController];
+    [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
+    [self transitionFromViewController:outgoingViewController
+                      toViewController:incomingViewController
+                              duration:0.5 options:0
+                            animations:^{
+                                outgoingViewController.view.frame = [self offScreenFrame];
+                                
+                            }
+     
+                            completion:^(BOOL finished) {
+                                [UIView animateWithDuration:0.5
+                                                 animations:^{
+                                                     [outgoingViewController.view removeFromSuperview];
+                                                     [self.view addSubview:incomingViewController.view];
+                                                     incomingViewController.view.frame = visibleFrame;
+                                                     [[UIApplication sharedApplication] endIgnoringInteractionEvents];
+                                                 }];
+                                [incomingViewController didMoveToParentViewController:self];
+                                [outgoingViewController removeFromParentViewController];
+                                self.isMenuVisible = NO;
+                                self.indexOfVisibleController = index;
+                            }];
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return self.menuTitles.count;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kMenuCellID];
+    cell.textLabel.text = self.menuTitles[indexPath.row];
+    return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [self replaceVisibleViewControllerWithViewControllerAtIndex:indexPath.row];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -66,6 +161,10 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (CGRect)offScreenFrame
+{
+    return CGRectMake(self.view.bounds.size.width, 0, self.view.bounds.size.width, self.view.bounds.size.height);
+}
 /*
 #pragma mark - Navigation
 
