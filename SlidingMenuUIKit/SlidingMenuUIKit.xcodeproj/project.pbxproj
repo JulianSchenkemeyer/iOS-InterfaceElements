@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B9482F281A7029BB00856117 /* MenuComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = B9482F271A7029BB00856117 /* MenuComponent.m */; };
 		B9C1CA001A6FEFFC00E2FE2D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B9C1C9FF1A6FEFFC00E2FE2D /* main.m */; };
 		B9C1CA031A6FEFFC00E2FE2D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B9C1CA021A6FEFFC00E2FE2D /* AppDelegate.m */; };
 		B9C1CA061A6FEFFC00E2FE2D /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B9C1CA051A6FEFFC00E2FE2D /* ViewController.m */; };
@@ -27,6 +28,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		B9482F261A7029BB00856117 /* MenuComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuComponent.h; sourceTree = "<group>"; };
+		B9482F271A7029BB00856117 /* MenuComponent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuComponent.m; sourceTree = "<group>"; };
 		B9C1C9FA1A6FEFFC00E2FE2D /* SlidingMenuUIKit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SlidingMenuUIKit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B9C1C9FE1A6FEFFC00E2FE2D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B9C1C9FF1A6FEFFC00E2FE2D /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -85,6 +88,8 @@
 				B9C1CA021A6FEFFC00E2FE2D /* AppDelegate.m */,
 				B9C1CA041A6FEFFC00E2FE2D /* ViewController.h */,
 				B9C1CA051A6FEFFC00E2FE2D /* ViewController.m */,
+				B9482F261A7029BB00856117 /* MenuComponent.h */,
+				B9482F271A7029BB00856117 /* MenuComponent.m */,
 				B9C1CA071A6FEFFC00E2FE2D /* Main.storyboard */,
 				B9C1CA0A1A6FEFFC00E2FE2D /* Images.xcassets */,
 				B9C1CA0C1A6FEFFC00E2FE2D /* LaunchScreen.xib */,
@@ -221,6 +226,7 @@
 			files = (
 				B9C1CA061A6FEFFC00E2FE2D /* ViewController.m in Sources */,
 				B9C1CA031A6FEFFC00E2FE2D /* AppDelegate.m in Sources */,
+				B9482F281A7029BB00856117 /* MenuComponent.m in Sources */,
 				B9C1CA001A6FEFFC00E2FE2D /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -414,6 +420,7 @@
 				B9C1CA1F1A6FEFFC00E2FE2D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		B9C1CA201A6FEFFC00E2FE2D /* Build configuration list for PBXNativeTarget "SlidingMenuUIKitTests" */ = {
 			isa = XCConfigurationList;
@@ -422,6 +429,7 @@
 				B9C1CA221A6FEFFC00E2FE2D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
