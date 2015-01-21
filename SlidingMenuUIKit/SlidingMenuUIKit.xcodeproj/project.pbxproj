@@ -14,6 +14,10 @@
 		B9C1CA0B1A6FEFFC00E2FE2D /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B9C1CA0A1A6FEFFC00E2FE2D /* Images.xcassets */; };
 		B9C1CA0E1A6FEFFC00E2FE2D /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = B9C1CA0C1A6FEFFC00E2FE2D /* LaunchScreen.xib */; };
 		B9C1CA1A1A6FEFFC00E2FE2D /* SlidingMenuUIKitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B9C1CA191A6FEFFC00E2FE2D /* SlidingMenuUIKitTests.m */; };
+		B9C1CA2A1A70207E00E2FE2D /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9C1CA291A70207E00E2FE2D /* UIKit.framework */; };
+		B9C1CA2C1A70209200E2FE2D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9C1CA2B1A70209200E2FE2D /* CoreGraphics.framework */; };
+		B9C1CA2E1A70209F00E2FE2D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9C1CA2D1A70209F00E2FE2D /* Foundation.framework */; };
+		B9C1CA311A7021AE00E2FE2D /* menuComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = B9C1CA301A7021AE00E2FE2D /* menuComponent.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,6 +44,11 @@
 		B9C1CA131A6FEFFC00E2FE2D /* SlidingMenuUIKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SlidingMenuUIKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B9C1CA181A6FEFFC00E2FE2D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B9C1CA191A6FEFFC00E2FE2D /* SlidingMenuUIKitTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SlidingMenuUIKitTests.m; sourceTree = "<group>"; };
+		B9C1CA291A70207E00E2FE2D /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		B9C1CA2B1A70209200E2FE2D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		B9C1CA2D1A70209F00E2FE2D /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		B9C1CA2F1A7021AE00E2FE2D /* menuComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = menuComponent.h; sourceTree = "<group>"; };
+		B9C1CA301A7021AE00E2FE2D /* menuComponent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = menuComponent.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,6 +56,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B9C1CA2C1A70209200E2FE2D /* CoreGraphics.framework in Frameworks */,
+				B9C1CA2A1A70207E00E2FE2D /* UIKit.framework in Frameworks */,
+				B9C1CA2E1A70209F00E2FE2D /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -63,6 +75,9 @@
 		B9C1C9F11A6FEFFB00E2FE2D = {
 			isa = PBXGroup;
 			children = (
+				B9C1CA2D1A70209F00E2FE2D /* Foundation.framework */,
+				B9C1CA2B1A70209200E2FE2D /* CoreGraphics.framework */,
+				B9C1CA291A70207E00E2FE2D /* UIKit.framework */,
 				B9C1C9FC1A6FEFFC00E2FE2D /* SlidingMenuUIKit */,
 				B9C1CA161A6FEFFC00E2FE2D /* SlidingMenuUIKitTests */,
 				B9C1C9FB1A6FEFFC00E2FE2D /* Products */,
@@ -84,6 +99,8 @@
 				B9C1CA011A6FEFFC00E2FE2D /* AppDelegate.h */,
 				B9C1CA021A6FEFFC00E2FE2D /* AppDelegate.m */,
 				B9C1CA041A6FEFFC00E2FE2D /* ViewController.h */,
+				B9C1CA2F1A7021AE00E2FE2D /* menuComponent.h */,
+				B9C1CA301A7021AE00E2FE2D /* menuComponent.m */,
 				B9C1CA051A6FEFFC00E2FE2D /* ViewController.m */,
 				B9C1CA071A6FEFFC00E2FE2D /* Main.storyboard */,
 				B9C1CA0A1A6FEFFC00E2FE2D /* Images.xcassets */,
@@ -221,6 +238,7 @@
 			files = (
 				B9C1CA061A6FEFFC00E2FE2D /* ViewController.m in Sources */,
 				B9C1CA031A6FEFFC00E2FE2D /* AppDelegate.m in Sources */,
+				B9C1CA311A7021AE00E2FE2D /* menuComponent.m in Sources */,
 				B9C1CA001A6FEFFC00E2FE2D /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -346,8 +364,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = SlidingMenuUIKit/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -356,8 +376,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = SlidingMenuUIKit/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
