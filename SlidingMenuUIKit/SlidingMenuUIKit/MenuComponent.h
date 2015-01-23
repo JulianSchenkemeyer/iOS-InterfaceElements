@@ -28,6 +28,8 @@ typedef enum MenuDirectionOptionTypes{
                 options:(NSArray *)options
            optionImages:(NSArray *)optionImages;
 
-- (void)showMenu;
+//- (void)showMenu;
+
+- (void)showMenuWithSelectionHandler:(void(^)(NSInteger selectedOptionIndex))handler;
 
 @end

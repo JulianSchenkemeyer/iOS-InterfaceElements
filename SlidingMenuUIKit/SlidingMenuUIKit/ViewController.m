@@ -42,7 +42,16 @@
 
 - (void)showMenu:(UIGestureRecognizer *)gestureRecognizer
 {
-    [self.menuComponent showMenu];
+    [self.menuComponent showMenuWithSelectionHandler:^(NSInteger selectionOptionIndex) {
+        
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Sliding Menu with UIKit"
+                                                       message:[NSString stringWithFormat:@"You selected option #%ld", selectionOptionIndex + 1]
+                                                       delegate:nil
+                                              cancelButtonTitle:nil
+                                              otherButtonTitles:@"Okay", nil];
+        
+        [alert show];
+    }];
 }
 
 - (void)didReceiveMemoryWarning {

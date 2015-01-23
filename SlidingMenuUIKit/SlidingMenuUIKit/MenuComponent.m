@@ -25,6 +25,9 @@
 
 @property (nonatomic) BOOL isMenuShown;
 
+// private property for storing a block
+@property (nonatomic, strong) void(^selectionHandler)(NSInteger);
+
 
 //private methods for setting up the sliding menu
 - (void)setupMenuView;
@@ -63,7 +66,7 @@
         [self setupMenuView];
         
         // Setup the options table view.
-        //[self setupOptionsTableView];
+        [self setupOptionsTableView];
         
         // Set the initial table view settings.
         [self setInitialTableViewSettings];
@@ -251,12 +254,78 @@
 }
 
 
-- (void)showMenu
+- (void)showMenuWithSelectionHandler:(void (^)(NSInteger))handler
 {
     if (!self.isMenuShown) {
+        self.selectionHandler = handler;
+        
         [self toggleMenu];
         
         self.isMenuShown = YES;
+    }
+}
+
+- (void)hideMenuWithGesture:(UISwipeGestureRecognizer *)gesture {
+    // Make a call to toggleMenu method for hiding the menu.
+    [self toggleMenu];
+    
+    // Indicate that the menu is not shown.
+    self.isMenuShown = NO;
+}
+
+//************************************
+// Setup for the Table
+//************************************
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return [self.menuOptions count];
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return self.optionCellHeight;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"optionCell"];
+    
+    if (cell == nil) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"optionCell"];
+    }
+    
+    // set the selection style
+    [cell setSelectionStyle:[[self.tableSettings objectForKey:@"selectionStyle"] intValue]];
+    
+    // set text and properties for the cell
+    cell.textLabel.text = [self.menuOptions objectAtIndex:indexPath.row];
+    [cell.textLabel setFont:[self.tableSettings objectForKey:@"font"]];
+    [cell.textLabel setTextAlignment:[[self.tableSettings objectForKey:@"textAlignment"] intValue]];
+    [cell.textLabel setTextColor:[self.tableSettings objectForKey:@"textColor"]];
+    
+    // add images if specified
+    if (self.menuOptionImages != nil) {
+        [cell.imageView setImage:[UIImage imageNamed:[self.menuOptionImages objectAtIndex:indexPath.row]]];
+        [cell.imageView setTintColor:[UIColor whiteColor]];
+    }
+    
+    [cell setBackgroundColor:[UIColor clearColor]];
+    
+    return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [[tableView cellForRowAtIndexPath:indexPath] setSelected:NO];
+    
+    if (self.selectionHandler) {
+        self.selectionHandler(indexPath.row);
     }
 }
 
