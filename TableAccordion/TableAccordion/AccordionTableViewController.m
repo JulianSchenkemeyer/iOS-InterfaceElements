@@ -13,6 +13,8 @@
 
 @interface AccordionTableViewController ()
 
+@property (nonatomic, strong) NSMutableArray* currentSubItems;
+
 @end
 
 @implementation AccordionTableViewController
@@ -43,6 +45,7 @@
         _topItems = [[NSArray alloc] initWithArray:[self genTopLevelItems]];
         _subItems = [[NSMutableArray alloc] init];
         _currentExpandedIndex = -1;
+        _currentSubItems = [[NSMutableArray alloc] init];
         
         for (int i = 0; i < [_topItems count]; i++) {
             [_subItems addObject:[self genSubItems]];
@@ -85,7 +88,8 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 
     // Return the number of rows in the section.
-    return [self.topItems count];
+    NSLog([NSString stringWithFormat:@"%lu", [self.topItems count] + [self.currentSubItems count]]);
+    return ([self.topItems count] + [self.currentSubItems count]);
 }
 
 
@@ -135,7 +139,7 @@
     }
     
     // update the tableView
-    //[self.tableView beginUpdates];
+    [self.tableView beginUpdates];
     
     if (self.currentExpandedIndex == indexPath.row) {
         [self collapseSubItemsAtIndex:self.currentExpandedIndex];
@@ -157,24 +161,24 @@
         
         [self expandItemAtIndex:self.currentExpandedIndex];
     }
-    //[self.tableView endUpdates];
-    [self.tableView reloadData];
+    [self.tableView endUpdates];
+    //[self.tableView reloadData];
 }
 
 
 - (void)expandItemAtIndex:(NSInteger)index {
     NSMutableArray *indexPaths = [[NSMutableArray alloc] init];
     
-    NSArray *currentSubItems = [[NSArray alloc] initWithArray:[self.subItems objectAtIndex:index]];
+    _currentSubItems = [self.subItems objectAtIndex:index];
                                 
     NSInteger insertPos = index + 1;
-    for (NSInteger i = 0; i < [currentSubItems count]; i++) {
+    for (NSInteger i = 0; i < [_currentSubItems count]; i++) {
         [indexPaths addObject:[NSIndexPath indexPathForRow:insertPos++ inSection:0]];
     }
     NSLog([NSString stringWithFormat:@"%ld",(long)[self.tableView numberOfRowsInSection:0]]);
     [self.tableView insertRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationFade];
     [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
-    NSLog([NSString stringWithFormat:@"%ld",(long)[self.tableView numberOfRowsInSection:0]]);
+    //NSLog([NSString stringWithFormat:@"%ld",(long)[self.tableView numberOfRowsInSection:0]]);
 }
 
 - (void)collapseSubItemsAtIndex:(NSInteger)index {
