@@ -13,6 +13,8 @@
 @property (nonatomic, strong) NSArray *topItems;
 @property (nonatomic, strong) NSMutableArray *subItems;
 
-@property (nonatomic) NSInteger currentExpandedIndex;
+@property (nonatomic) NSInteger pointOfInsertion;
+@property (nonatomic) NSInteger sizeOfInsertion;
+
 
 @end

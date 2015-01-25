@@ -13,7 +13,7 @@
 
 @interface AccordionTableViewController ()
 
-@property (nonatomic, strong) NSMutableArray* currentSubItems;
+
 
 @end
 
@@ -44,8 +44,8 @@
     if (self) {
         _topItems = [[NSArray alloc] initWithArray:[self genTopLevelItems]];
         _subItems = [[NSMutableArray alloc] init];
-        _currentExpandedIndex = -1;
-        _currentSubItems = [[NSMutableArray alloc] init];
+        _pointOfInsertion = 0;
+        _sizeOfInsertion = 0;
         
         for (int i = 0; i < [_topItems count]; i++) {
             [_subItems addObject:[self genSubItems]];
@@ -88,50 +88,55 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 
     // Return the number of rows in the section.
-    NSLog([NSString stringWithFormat:@"%lu", [self.topItems count] + [self.currentSubItems count]]);
-    return ([self.topItems count] + [self.currentSubItems count]);
+    NSInteger numberOfRows;
+    if (self.sizeOfInsertion > 0) {
+        numberOfRows = [self.topItems count] + self.sizeOfInsertion;
+    } else {
+        numberOfRows = [self.topItems count];
+    }
+    
+    NSLog([NSString stringWithFormat:@"number of rows: %lu", numberOfRows]);
+    return numberOfRows;
 }
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
     
-    // check if cell is already initialised, if not then initialise
-    if (cell == nil) {
-        //cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"ParentCell"];
-    }
-    
     
     // determine if current cell is parent or child
-    BOOL isChild = self.currentExpandedIndex >= 0 && indexPath.row > 0 && indexPath.row <= self.currentExpandedIndex + [[self.subItems objectAtIndex:self.currentExpandedIndex] count];
+    BOOL isChild = indexPath.row > self.pointOfInsertion && indexPath.row <= (self.pointOfInsertion + self.sizeOfInsertion);
     
     if (isChild) {
-        //cell = [tableView dequeueReusableCellWithIdentifier:@"ChildCell" forIndexPath:indexPath];
-        
         // set information for the childCell
-        cell.detailTextLabel.text = [[self.subItems objectAtIndex:self.currentExpandedIndex] objectAtIndex:indexPath.row - (self.currentExpandedIndex + 1)];
+        NSLog([NSString stringWithFormat:@"%ld", (long)indexPath.row]);
         
+        cell.textLabel.text = [[self.subItems objectAtIndex:(self.pointOfInsertion)] objectAtIndex:indexPath.row - (self.pointOfInsertion + 1)];
+        
+        NSLog(cell.textLabel.text);
     } else {
-        //cell = [tableView dequeueReusableCellWithIdentifier:@"ParentCell" forIndexPath:indexPath];
-        
         // is a cell currently expanded?
         NSInteger topIndex;
-        if (self.currentExpandedIndex >= 0 && indexPath.row > self.currentExpandedIndex) {
-            topIndex = indexPath.row - [[self.subItems objectAtIndex:self.currentExpandedIndex] count];
+//        if (self.currentExpandedIndex >= 0 && indexPath.row > self.currentExpandedIndex) {
+//            topIndex = indexPath.row - [[self.subItems objectAtIndex:self.currentExpandedIndex] count];
+//        } else {
+//            topIndex = indexPath.row;
+//        }
+        
+        if (self.sizeOfInsertion > 0 && indexPath.row > self.pointOfInsertion) {
+            topIndex = indexPath.row - [[self.subItems objectAtIndex:self.pointOfInsertion] count];
         } else {
             topIndex = indexPath.row;
         }
-        
         // set inforamtion for the parentCell
         cell.textLabel.text = [self.topItems objectAtIndex:topIndex];
-        cell.detailTextLabel.text = @"";
     }
     
     return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    BOOL isChild = self.currentExpandedIndex >= 0 && indexPath.row > 0 && indexPath.row <= self.currentExpandedIndex + [[self.subItems objectAtIndex:self.currentExpandedIndex] count];
+    BOOL isChild = indexPath.row > self.pointOfInsertion && indexPath.row <= (self.pointOfInsertion + self.sizeOfInsertion);
 
     if (isChild) {
         NSLog(@"Tapped");
@@ -141,25 +146,25 @@
     // update the tableView
     [self.tableView beginUpdates];
     
-    if (self.currentExpandedIndex == indexPath.row) {
-        [self collapseSubItemsAtIndex:self.currentExpandedIndex];
-        self.currentExpandedIndex = -1;
+    if (self.pointOfInsertion == indexPath.row) {
+        [self collapseSubItemsAtIndex:self.pointOfInsertion];
+        self.pointOfInsertion = 0;
         
     } else {
         
-        BOOL shouldCollapse = self.currentExpandedIndex >= 0;
+        BOOL shouldCollapse = self.sizeOfInsertion > 0;
         
         if (shouldCollapse) {
-            [self collapseSubItemsAtIndex:self.currentExpandedIndex];
+            [self collapseSubItemsAtIndex:self.pointOfInsertion];
         }
         
-        if (shouldCollapse && indexPath.row > self.currentExpandedIndex) {
-            self.currentExpandedIndex = indexPath.row - [[self.subItems objectAtIndex:self.currentExpandedIndex] count];
+        if (shouldCollapse && indexPath.row > self.pointOfInsertion) {
+            self.pointOfInsertion = indexPath.row - [[self.subItems objectAtIndex:self.pointOfInsertion] count];
         } else {
-            self.currentExpandedIndex = indexPath.row;
+            self.pointOfInsertion = indexPath.row;
         }
         
-        [self expandItemAtIndex:self.currentExpandedIndex];
+        [self expandItemAtIndex:self.pointOfInsertion];
     }
     [self.tableView endUpdates];
     //[self.tableView reloadData];
@@ -169,15 +174,15 @@
 - (void)expandItemAtIndex:(NSInteger)index {
     NSMutableArray *indexPaths = [[NSMutableArray alloc] init];
     
-    _currentSubItems = [self.subItems objectAtIndex:index];
+    self.sizeOfInsertion = [[self.subItems objectAtIndex:index] count];
                                 
     NSInteger insertPos = index + 1;
-    for (NSInteger i = 0; i < [_currentSubItems count]; i++) {
+    for (NSInteger i = 0; i < self.sizeOfInsertion; i++) {
         [indexPaths addObject:[NSIndexPath indexPathForRow:insertPos++ inSection:0]];
     }
-    NSLog([NSString stringWithFormat:@"%ld",(long)[self.tableView numberOfRowsInSection:0]]);
+    //NSLog([NSString stringWithFormat:@"%ld",(long)[self.tableView numberOfRowsInSection:0]]);
     [self.tableView insertRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationFade];
-    [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
+    //[self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
     //NSLog([NSString stringWithFormat:@"%ld",(long)[self.tableView numberOfRowsInSection:0]]);
 }
 
@@ -188,6 +193,8 @@
         [indexPaths addObject:[NSIndexPath indexPathForRow:i inSection:0]];
     }
     [self.tableView deleteRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationFade];
+    
+    self.sizeOfInsertion = 0;
 }
 /*
 // Override to support conditional editing of the table view.
