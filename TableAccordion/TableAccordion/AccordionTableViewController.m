@@ -22,14 +22,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
-    
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-    
-    //self.topItems = [[NSArray alloc] init];
-    //self.subItems = [[NSMutableArray alloc] init];
     [self init];
 }
 
@@ -95,7 +87,6 @@
         numberOfRows = [self.topItems count];
     }
     
-    NSLog([NSString stringWithFormat:@"number of rows: %lu", numberOfRows]);
     return numberOfRows;
 }
 
@@ -109,20 +100,11 @@
     
     if (isChild) {
         // set information for the childCell
-        NSLog([NSString stringWithFormat:@"%ld", (long)indexPath.row]);
-        
         cell.textLabel.text = [[self.subItems objectAtIndex:(self.pointOfInsertion)] objectAtIndex:indexPath.row - (self.pointOfInsertion + 1)];
         
-        NSLog(cell.textLabel.text);
     } else {
         // is a cell currently expanded?
         NSInteger topIndex;
-//        if (self.currentExpandedIndex >= 0 && indexPath.row > self.currentExpandedIndex) {
-//            topIndex = indexPath.row - [[self.subItems objectAtIndex:self.currentExpandedIndex] count];
-//        } else {
-//            topIndex = indexPath.row;
-//        }
-        
         if (self.sizeOfInsertion > 0 && indexPath.row > self.pointOfInsertion) {
             topIndex = indexPath.row - [[self.subItems objectAtIndex:self.pointOfInsertion] count];
         } else {
@@ -167,7 +149,7 @@
         [self expandItemAtIndex:self.pointOfInsertion];
     }
     [self.tableView endUpdates];
-    //[self.tableView reloadData];
+
 }
 
 
@@ -180,10 +162,9 @@
     for (NSInteger i = 0; i < self.sizeOfInsertion; i++) {
         [indexPaths addObject:[NSIndexPath indexPathForRow:insertPos++ inSection:0]];
     }
-    //NSLog([NSString stringWithFormat:@"%ld",(long)[self.tableView numberOfRowsInSection:0]]);
+
     [self.tableView insertRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationFade];
-    //[self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
-    //NSLog([NSString stringWithFormat:@"%ld",(long)[self.tableView numberOfRowsInSection:0]]);
+
 }
 
 - (void)collapseSubItemsAtIndex:(NSInteger)index {
