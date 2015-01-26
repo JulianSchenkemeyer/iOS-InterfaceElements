@@ -23,25 +23,25 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
-    
+    // set the direction of the showMenu-swipe
     UISwipeGestureRecognizer *showMenuGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(showMenu:)];
-    
     showMenuGesture.direction = UISwipeGestureRecognizerDirectionLeft;
-    
     [self.view addGestureRecognizer:showMenuGesture];
 
-
+    // setup the menuComponent
     CGRect desiredMenuFrame = CGRectMake(0.0, 20.0, 150.0, self.view.frame.size.height);
     self.menuComponent = [[MenuComponent alloc] initMenuWithFrame:desiredMenuFrame
                                                        targetView:self.view
                                                         direction:menuDirectionRightToLeft
                                                           options:@[@"Download", @"Upload", @"E-mail", @"Settings", @"About"]
-                                                     optionImages:@[@"download", @"upload", @"email", @"settings", @"info"]];
+                                                     optionImages:@[@"download", @"upload", @"email", @"settings", @"info"]
+                                                        menuColor:[UIColor orangeColor]];
 
 }
 
 - (void)showMenu:(UIGestureRecognizer *)gestureRecognizer
 {
+    
     [self.menuComponent showMenuWithSelectionHandler:^(NSInteger selectionOptionIndex) {
         
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Sliding Menu with UIKit"

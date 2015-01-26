@@ -10,14 +10,17 @@
 
 @interface MenuComponent()
 
+// Basics
 @property (nonatomic, strong) UIView *menuView;
 @property (nonatomic, strong) UIView *backgroundView;
 @property (nonatomic, strong) UIView *targetView;
 @property (nonatomic, strong) UITableView *optionsTableView;
 
+// Content of the slidingMenu
 @property (nonatomic, strong) NSArray *menuOptions;
 @property (nonatomic, strong) NSArray *menuOptionImages;
 
+// Basics for the animation
 @property (nonatomic, strong) UIDynamicAnimator *animator;
 @property (nonatomic) MenuDirectionOptions menuDirection;
 @property (nonatomic) CGRect menuFrame;
@@ -30,7 +33,7 @@
 
 
 //private methods for setting up the sliding menu
-- (void)setupMenuView;
+- (void)setupMenuView:(UIColor *)menuColor;
 - (void)setupBackgroundView;
 - (void)setupOptionsTableView;
 - (void)setInitialTableViewSettings;
@@ -50,6 +53,7 @@
               direction:(MenuDirectionOptions)direction
                 options:(NSArray *)options
            optionImages:(NSArray *)optionImages
+              menuColor:(UIColor *)menuColor
 {
     if (self = [super init]) {
         self.menuFrame = frame;
@@ -63,7 +67,7 @@
         [self setupBackgroundView];
         
         // Setup the menu view.
-        [self setupMenuView];
+        [self setupMenuView:menuColor];
         
         // Setup the options table view.
         [self setupOptionsTableView];
@@ -96,8 +100,9 @@
 //*************************************//
 
 // setup the Menu View outside of the visible screen area
-- (void)setupMenuView
+- (void)setupMenuView:(UIColor *)menuColor
 {
+    // create the menuView outside the visible area so it can be swiped in
     if (self.menuDirection == menuDirectionLeftToRight) {
         self.menuInitialFrame = CGRectMake(-self.menuFrame.size.width,
                                            self.menuFrame.origin.y,
@@ -111,11 +116,11 @@
     }
     
     self.menuView = [[UIView alloc] initWithFrame:self.menuInitialFrame];
-    [self.menuView setBackgroundColor:[UIColor colorWithRed:0.0 green:0.47 blue:0.39 alpha:1.0]];
+    [self.menuView setBackgroundColor:menuColor];
     [self.targetView addSubview:self.menuView];
 }
 
-// setup a View, which prohibites the user touches anywhere outside the menu
+// setup a View, which prohibites the user selections anywhere outside the menu
 - (void)setupBackgroundView
 {
     self.backgroundView = [[UIView alloc] initWithFrame:self.targetView.frame];
@@ -132,11 +137,13 @@
                                                                           self.menuFrame.size.width,
                                                                           self.menuFrame.size.height)
                                                          style:UITableViewStylePlain];
+   
     [self.optionsTableView setBackgroundColor:[UIColor clearColor]];
     [self.optionsTableView setScrollEnabled:NO];
     [self.optionsTableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
     [self.menuView addSubview:self.optionsTableView];
     
+    // set delegate and datasource for the Table
     [self.optionsTableView setDelegate:self];
     [self.optionsTableView setDataSource:self];
 }
@@ -145,23 +152,31 @@
 - (void)setInitialTableViewSettings
 {
     self.tableSettings = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
-                          [UIFont fontWithName:@"American Typewriter" size:15.0], @"font",
+                          [UIFont fontWithName:@"Hevletica Neue" size:15.0], @"font",
                           [NSNumber numberWithInt:NSTextAlignmentLeft], @"textAlignment",
                           [UIColor whiteColor], @"textColor",
-                          [NSNumber numberWithInt:UITableViewCellSelectionStyleGray], @"selectionStyle",
-                          nil];
+                          [NSNumber numberWithInt:UITableViewCellSelectionStyleGray], @"selectionStyle", nil];
 }
 
 // setup the gesture recognizer to recognize swipe gestures on the screen
-- (void)setupSwipeGestureRecognizer {
-    UISwipeGestureRecognizer *hideMenuGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(hideMenuWithGesture:)];
+- (void)setupSwipeGestureRecognizer
+{
+    // initialize two UISwipeGestureRecognizer. One to the recognize swipes in the menuView and another to recognize swipe on the backgroundView
+    UISwipeGestureRecognizer *hideMenuGestureMenuView = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(hideMenuWithGesture:)];
+    UISwipeGestureRecognizer *hideMenuGestureBackgroundView = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(hideMenuWithGesture:)];
+    
     if (self.menuDirection == menuDirectionLeftToRight) {
-        hideMenuGesture.direction = UISwipeGestureRecognizerDirectionLeft;
+        hideMenuGestureMenuView.direction = UISwipeGestureRecognizerDirectionLeft;
+        hideMenuGestureBackgroundView.direction = UISwipeGestureRecognizerDirectionLeft;
+    
+    } else {
+        hideMenuGestureMenuView.direction = UISwipeGestureRecognizerDirectionRight;
+        hideMenuGestureBackgroundView.direction = UISwipeGestureRecognizerDirectionRight;
     }
-    else{
-        hideMenuGesture.direction = UISwipeGestureRecognizerDirectionRight;
-    }
-    [self.menuView addGestureRecognizer:hideMenuGesture];
+    
+    // add the GestureRecognizers to the menuView and the BackgroundView
+    [self.menuView addGestureRecognizer:hideMenuGestureMenuView];
+    [self.backgroundView addGestureRecognizer:hideMenuGestureBackgroundView];
 }
 
 
@@ -180,27 +195,22 @@
     
     // Check if the menu is shown or not.
     if (!self.isMenuShown) {
-        // If the menu view is hidden and it's about to be shown, then specify each variable
-        // value depending on the animation direction.
+        
+        // The menu is not shown so we need to check the specified menuDirection to setup the right behaviors
         if (self.menuDirection == menuDirectionLeftToRight) {
-            // The value 1.0 means that gravity "moves" the view towards the right side.
+            
+            // Gravity and boundaries if the menu slides in from the left
             gravityDirectionX = 1.0;
             
-            // The From and To points define an invisible boundary, where the X-origin point
-            // equals to the desired X-origin point that the menu view should collide, and the
-            // Y-origin points specify the highest and lowest point of the boundary.
-            
-            // If the menu view is being shown from left to right, then the collision boundary
-            // should be defined so as to be at the right of the initial menu view position.
+            // max and min boundaries for the menu
             collisionPointFrom = CGPointMake(self.menuFrame.size.width, self.menuFrame.origin.y);
             collisionPointTo = CGPointMake(self.menuFrame.size.width, self.menuFrame.size.height);
-        }
-        else{
-            // The value -1.0 means that gravity "pulls" the view towards the left side.
+        
+        } else {
+            
+            // Gravity and boundaries if the menu slides in from the right
             gravityDirectionX = -1.0;
             
-            // If the menu view is being shown from right to left, then the collision boundary
-            // should be defined so as to be at the left of the initial menu view position.
             collisionPointFrom = CGPointMake(self.targetView.frame.size.width - self.menuFrame.size.width, self.menuFrame.origin.y);
             collisionPointTo = CGPointMake(self.targetView.frame.size.width - self.menuFrame.size.width, self.menuFrame.size.height);
             
@@ -210,21 +220,26 @@
         
         // Make the background view semi-transparent.
         [self.backgroundView setAlpha:0.25];
-    }
-    else{
-        // In case the menu is about to be hidden, then the exact opposite values should be
-        // set to all variables for succeeding the opposite animation.
+    
+    } else {
         
+        // The menu is currently shown, so want to hide it. Here we also need to check the specified menuDirection to setup the right behaviors
         if (self.menuDirection == menuDirectionLeftToRight) {
+        
+            // Behaviors if the menu slides out to the right
             gravityDirectionX = -1.0;
+            
             collisionPointFrom = CGPointMake(-self.menuFrame.size.width, self.menuFrame.origin.y);
             collisionPointTo = CGPointMake(-self.menuFrame.size.width, self.menuFrame.size.height);
             
             // Set to the pushMagnitude variable the opposite value.
             pushMagnitude = (-1) * pushMagnitude;
-        }
-        else{
+        
+        } else {
+            
+            // Behaviors if the menu slides out to the left
             gravityDirectionX = 1.0;
+            
             collisionPointFrom = CGPointMake(self.targetView.frame.size.width + self.menuFrame.size.width, self.menuFrame.origin.y);
             collisionPointTo = CGPointMake(self.targetView.frame.size.width + self.menuFrame.size.width, self.menuFrame.size.height);
         }
@@ -233,7 +248,7 @@
         [self.backgroundView setAlpha:0.0];
     }
     
-    
+    // Add the previously created behaviors to the animator
     UIGravityBehavior *gravityBehavior = [[UIGravityBehavior alloc] initWithItems:@[self.menuView]];
     [gravityBehavior setGravityDirection:CGVectorMake(gravityDirectionX, 0.0)];
     [self.animator addBehavior:gravityBehavior];
@@ -244,9 +259,9 @@
                                          toPoint:collisionPointTo];
     [self.animator addBehavior:collisionBehavior];
     
-    UIDynamicItemBehavior *itemBehavior = [[UIDynamicItemBehavior alloc] initWithItems:@[self.menuView]];
-    [itemBehavior setElasticity:0.35];
-    [self.animator addBehavior:itemBehavior];
+//    UIDynamicItemBehavior *itemBehavior = [[UIDynamicItemBehavior alloc] initWithItems:@[self.menuView]];
+//    [itemBehavior setElasticity:0.0];
+//    [self.animator addBehavior:itemBehavior];
     
     UIPushBehavior *pushBehavior = [[UIPushBehavior alloc] initWithItems:@[self.menuView] mode:UIPushBehaviorModeInstantaneous];
     [pushBehavior setMagnitude:pushMagnitude];

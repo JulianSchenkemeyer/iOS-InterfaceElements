@@ -26,7 +26,8 @@ typedef enum MenuDirectionOptionTypes{
              targetView:(UIView *)targetView
               direction:(MenuDirectionOptions)direction
                 options:(NSArray *)options
-           optionImages:(NSArray *)optionImages;
+           optionImages:(NSArray *)optionImages
+              menuColor:(UIColor *)menuColor;
 
 //- (void)showMenu;
 
